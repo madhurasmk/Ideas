@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>File Upload & Viewer</title>
+    <style>
+        body { font-family: Arial; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            width: 80%;
+            height: 80%;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Upload File</h2>
+
+<form method="POST" enctype="multipart/form-data">
+    <input type="file" name="file" accept=".pdf,.doc,.docx,.xlsx" required>
+    <button type="submit">Upload</button>
+</form>
+
+<hr>
+
+<h3>Uploaded Files</h3>
+
+<ul>
+{% for file in files %}
+    <li>
+        <a href="javascript:void(0)"
+           onclick="openFile('{{ file }}')"
+           style="cursor:pointer; text-decoration:underline;">
+            {{ file }}
+        </a>
+    </li>
+{% else %}
+    <li>No files uploaded</li>
+{% endfor %}
+</ul>
+
+
+<div id="pdfModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closePdf()">×</span>
+        <iframe id="pdfFrame"></iframe>
+    </div>
+</div>
+
+<script>
+function openFile(filename) {
+    const ext = filename.split('.').pop().toLowerCase();
+
+    if (ext === "pdf") {
+        document.getElementById("pdfFrame").src =
+            "/uploads/" + encodeURIComponent(filename);
+        document.getElementById("pdfModal").style.display = "block";
+    } else {
+        window.open("/uploads/" + encodeURIComponent(filename), "_blank");
+    }
+}
+
+function closePdf() {
+    document.getElementById("pdfModal").style.display = "none";
+    document.getElementById("pdfFrame").src = "";
+}
+</script>
+
+</body>
+</html>
